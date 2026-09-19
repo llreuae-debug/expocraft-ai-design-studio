@@ -1,0 +1,296 @@
+// ExpoCraft Production PostgreSQL Schema
+// Central source of truth for: Brief -> AI 3D Design -> Specs -> BOQ -> Market Estimate -> Quotations -> Approval
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  DESIGNER
+  ESTIMATOR
+  SALES
+  CLIENT
+}
+
+enum MeasurementUnit {
+  METERS
+  FEET
+}
+
+enum OpenSides {
+  ONE_SIDE_INLINE
+  TWO_SIDES_CORNER
+  THREE_SIDES_PENINSULA
+  FOUR_SIDES_ISLAND
+}
+
+enum StallType {
+  CUSTOM_WOODEN
+  MODULAR_OCTANORM
+  HYBRID_SYSTEM
+  DOUBLE_DECKER
+  FABRIC_TENSION
+  TRUSS_SYSTEM
+}
+
+enum ProjectStatus {
+  BRIEF_RECEIVED
+  AI_DESIGN_IN_PROGRESS
+  DESIGN_READY
+  BOQ_ESTIMATING
+  QUOTATION_GENERATED
+  SENT_TO_CLIENT
+  APPROVED
+  REJECTED
+  IN_PRODUCTION
+}
+
+enum BOQCategory {
+  FLOORING
+  WALLS_PARTITIONS
+  FASCIA_CEILING
+  FURNITURE_AV
+  GRAPHICS_BRANDING
+  ELECTRICAL_LIGHTING
+  LABOUR_LOGISTICS
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REVISED
+  DECLINED
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  name          String
+  passwordHash  String?
+  role          UserRole     @default(DESIGNER)
+  avatarUrl     String?
+  companyName   String?
+  phone         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  createdProjects Project[]  @relation("ProjectCreator")
+  assignedDesigns Project[]  @relation("AssignedDesigner")
+  activityLogs    ActivityLog[]
+
+  @@map("users")
+}
+
+model Client {
+  id            String       @id @default(uuid())
+  companyName   String
+  contactPerson String
+  email         String
+  phone         String
+  website       String?
+  country       String
+  city          String
+  vatNumber     String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  projects      Project[]
+
+  @@map("clients")
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  projectCode     String        @unique // e.g. EXP-2026-001
+  name            String
+  status          ProjectStatus @default(BRIEF_RECEIVED)
+  
+  // Relations
+  clientId        String
+  client          Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  creatorId       String?
+  creator         User?         @relation("ProjectCreator", fields: [creatorId], references: [id])
+  
+  designerId      String?
+  designer        User?         @relation("AssignedDesigner", fields: [designerId], references: [id])
+  
+  // Exhibition Info
+  exhibitionName  String
+  venue           String
+  city            String
+  country         String
+  hallNumber      String?
+  stallNumber     String?
+  startDate       DateTime
+  endDate         DateTime
+  moveInDate      DateTime?
+  moveOutDate     DateTime?
+  
+  // Technical Stall Specifications
+  unit            MeasurementUnit @default(METERS)
+  width           Float           // in meters or feet
+  depth           Float
+  height          Float
+  maxHeightLimit  Float?
+  totalAreaSqm    Float
+  totalAreaSqft   Float
+  openSides       OpenSides       @default(ONE_SIDE_INLINE)
+  stallType       StallType       @default(CUSTOM_WOODEN)
+  
+  // Brief Details
+  industry        String
+  designStyle     String
+  primaryColor    String?
+  secondaryColor  String?
+  functionalZones Json?          // List of strings e.g. ["Reception", "VIP Lounge", "LED Wall"]
+  hasLedScreen    Boolean        @default(false)
+  hasPantry       Boolean        @default(false)
+  hasReception    Boolean        @default(true)
+  hasHangingBanner Boolean       @default(false)
+  specialNotes    String?
+  
+  // Commercial Targets
+  currency        String         @default("USD")
+  targetBudgetMin Float?
+  targetBudgetMax Float?
+  targetMargin    Float?         @default(25.0) // 25% default margin
+  
+  // Connected Entities
+  designConcepts  DesignConcept[]
+  finalRenders    FinalRender[]
+  boqItems        BOQItemRecord[]
+  quotations      QuotationRecord[]
+  activityLogs    ActivityLog[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@map("projects")
+}
+
+model FinalRender {
+  id                String       @id @default(uuid())
+  projectId         String
+  project           Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  designId          String?
+  designRevision    Int          @default(1)
+  generationId      String?
+  provider          String       @default("GOOGLE_IMAGEN_3")
+  model             String       @default("imagen-3.0-generate-002")
+  resolution        String       @default("7680x4320")
+  width             Int          @default(7680)
+  height            Int          @default(4320)
+  sourceImage       String
+  finalImage        String
+  thumbnail         String
+  views             Json?        // Multi-view array [Hero, 3/4, Interior, Detail]
+  promptVersion     String       @default("v1.0-architectural")
+  compiledPrompt    String?
+  generationStatus  String       @default("COMPLETED") // QUEUED, IN_PROGRESS, COMPLETED, FAILED
+  qualityStatus     String       @default("PASSED")    // PASSED, WARNING, FAILED
+  qualityReport     Json?
+  createdAt         DateTime     @default(now())
+  completedAt       DateTime?
+
+  @@map("final_renders")
+}
+
+model DesignConcept {
+  id              String       @id @default(uuid())
+  projectId       String
+  project         Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title           String
+  version         Int          @default(1)
+  thumbnailUrl    String
+  highResUrl      String?
+  aiPromptUsed    String?
+  isClientApproved Boolean     @default(false)
+  scene3DData     Json?        // Serialized 3D geometry/scene configuration
+  createdAt       DateTime     @default(now())
+
+  @@map("design_concepts")
+}
+
+model BOQItemRecord {
+  id              String       @id @default(uuid())
+  projectId       String
+  project         Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category        BOQCategory
+  itemCode        String
+  name            String
+  description     String?
+  unit            String       // sqm, sqft, pcs, lm, days, hours, set
+  quantity        Float
+  unitCost        Float
+  subtotal        Float
+  markupPercent   Float        @default(30.0)
+  clientRate      Float
+  totalClientPrice Float
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("boq_items")
+}
+
+model QuotationRecord {
+  id              String          @id @default(uuid())
+  projectId       String
+  project         Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quotationNumber String          @unique
+  version         Int             @default(1)
+  issueDate       DateTime        @default(now())
+  validUntil      DateTime
+  subtotalCost    Float
+  overheadMargin  Float
+  discountAmount  Float           @default(0.0)
+  vatPercent      Float           @default(5.0)
+  vatAmount       Float
+  grandTotal      Float
+  currency        String          @default("USD")
+  status          QuotationStatus @default(DRAFT)
+  clientNotes     String?
+  internalNotes   String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("quotations")
+}
+
+model ActivityLog {
+  id          String    @id @default(uuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+  actorName   String
+  actorRole   UserRole
+  action      String
+  details     String?
+  createdAt   DateTime  @default(now())
+
+  @@map("activity_logs")
+}
+
+model MaterialBenchmark {
+  id          String      @id @default(uuid())
+  city        String
+  country     String
+  category    BOQCategory
+  materialName String
+  unit        String
+  avgRate     Float
+  currency    String      @default("USD")
+  updatedAt   DateTime    @default(now())
+
+  @@map("material_benchmarks")
+}
