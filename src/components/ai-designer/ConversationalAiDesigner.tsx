@@ -22,6 +22,7 @@ import {
   Copy,
   Check,
   Cpu,
+  Key,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -31,6 +32,7 @@ interface ConversationalAiDesignerProps {
   onUpdateProjectBrief: (brief: DesignBrief, dimensions: any) => void;
   onProceedToConcepts: (compiledPrompt: string, width: number, depth: number, style: DesignStyle) => void;
   onDirect8kRender?: (compiledPrompt: string) => void;
+  onOpenApiKeyModal?: () => void;
 }
 
 interface ChatMessage {
@@ -69,6 +71,7 @@ export const ConversationalAiDesigner: React.FC<ConversationalAiDesignerProps> =
   onUpdateProjectBrief,
   onProceedToConcepts,
   onDirect8kRender,
+  onOpenApiKeyModal,
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -242,10 +245,21 @@ export const ConversationalAiDesigner: React.FC<ConversationalAiDesignerProps> =
               </span>
             </div>
           </div>
-          <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Auto-8K Engine Active
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onOpenApiKeyModal}
+              className="px-2.5 py-1 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-[10px] font-mono font-bold flex items-center gap-1.5 border border-cyan-500/30 transition-all"
+              title="Click to Connect or Test Google API Key"
+            >
+              <Key className="w-3 h-3 text-cyan-400" />
+              <span>Google AI Key</span>
+            </button>
+            <span className="hidden sm:flex px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Auto-8K Engine
+            </span>
+          </div>
         </div>
 
         {/* Message History */}

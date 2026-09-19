@@ -16,7 +16,9 @@ import {
   Shield,
   Sparkles,
   Coins,
+  Key,
 } from "lucide-react";
+import { QuickApiKeyModal } from "@/components/ai-designer/QuickApiKeyModal";
 
 export const AppNavbar: React.FC = () => {
   const { currentUser, allUsers, switchRole } = useAuth();
@@ -26,6 +28,7 @@ export const AppNavbar: React.FC = () => {
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [curMenuOpen, setCurMenuOpen] = useState(false);
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
 
   const roleColors: Record<UserRole, string> = {
     SUPER_ADMIN: "bg-purple-500/20 text-purple-300 border-purple-500/40",
@@ -222,6 +225,16 @@ export const AppNavbar: React.FC = () => {
           )}
         </div>
 
+        {/* Quick Google AI Connect Button */}
+        <button
+          onClick={() => setIsApiKeyModalOpen(true)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-xs text-slate-300 transition-all"
+          title="Connect or Test Google AI API Key"
+        >
+          <Key className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden lg:inline text-[11px] font-semibold">Google AI</span>
+        </button>
+
         {/* Notification Bell */}
         <button className="relative p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-colors">
           <Bell className="w-4 h-4" />
@@ -238,6 +251,12 @@ export const AppNavbar: React.FC = () => {
         </button>
 
       </div>
+
+      {/* Global Quick API Key Setup Modal */}
+      <QuickApiKeyModal
+        isOpen={isApiKeyModalOpen}
+        onClose={() => setIsApiKeyModalOpen(false)}
+      />
     </header>
   );
 };

@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getRenderAssetForStyle } from "@/lib/renderAssets";
+import { QuickApiKeyModal } from "@/components/ai-designer/QuickApiKeyModal";
 
 type WorkflowStage = "CHAT_BRIEF" | "CONCEPTS" | "REFINE" | "APPROVAL" | "FINAL_RENDER";
 
@@ -45,6 +46,7 @@ export default function AiDesignerPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<string>(projects[0]?.id || "");
   const [currentStage, setCurrentStage] = useState<WorkflowStage>("CHAT_BRIEF");
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isConceptReviewModalOpen, setIsConceptReviewModalOpen] = useState(false);
   const [activeCompiledPrompt, setActiveCompiledPrompt] = useState<string>("");
   const [autoTriggerRender, setAutoTriggerRender] = useState(false);
@@ -245,22 +247,30 @@ export default function AiDesignerPage() {
   return (
     <div className="space-y-6 pb-16">
       
-      {/* Missing Google AI Key Alert Banner */}
+      {/* Missing Google AI Key Alert Banner with 1-Click Modal */}
       {aiStatus && !aiStatus.connected && (
         <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-300">
           <div className="flex items-center gap-2.5 text-xs font-medium">
             <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-400" />
             <span>
-              <strong>Google AI is not connected.</strong> Add your Google API key in Settings → AI to generate 3D presentation renders.
+              <strong>Google AI is not connected.</strong> Connect your Google API key in 1-click to enable live 8K presentation rendering.
             </span>
           </div>
-          <Link
-            href="/settings"
-            className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md self-start sm:self-auto"
-          >
-            <Key className="w-3.5 h-3.5" />
-            <span>Configure AI Key</span>
-          </Link>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <button
+              onClick={() => setIsApiKeyModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all"
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span>Connect API Key Now</span>
+            </button>
+            <Link
+              href="/settings"
+              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-slate-700"
+            >
+              Settings
+            </Link>
+          </div>
         </div>
       )}
 
@@ -281,8 +291,8 @@ export default function AiDesignerPage() {
           </p>
         </div>
 
-        {/* Project Selector & Brand Button */}
-        <div className="flex items-center gap-3">
+        {/* Project Selector, AI Key & Brand Button */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <select
             value={selectedProjectId}
             onChange={(e) => {
@@ -297,6 +307,21 @@ export default function AiDesignerPage() {
               </option>
             ))}
           </select>
+
+          {/* Quick API Key Trigger Button */}
+          <button
+            onClick={() => setIsApiKeyModalOpen(true)}
+            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all ${
+              aiStatus?.connected
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                : "bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20 animate-pulse"
+            }`}
+            title="Configure / Test Google AI API Key"
+          >
+            <Key className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Google AI:</span>
+            <span>{aiStatus?.connected ? "Connected" : "Connect Key"}</span>
+          </button>
 
           <button
             onClick={() => setIsBrandModalOpen(true)}
@@ -359,6 +384,7 @@ export default function AiDesignerPage() {
           onUpdateProjectBrief={handleUpdateProjectBrief}
           onProceedToConcepts={handleProceedToConcepts}
           onDirect8kRender={handleDirect8kRender}
+          onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
         />
       )}
 
@@ -434,6 +460,13 @@ export default function AiDesignerPage() {
         onClose={() => setIsBrandModalOpen(false)}
         currentProfile={currentProject.brandProfile}
         onSaveProfile={handleSaveBrandProfile}
+      />
+
+      {/* In-Place Quick Google API Key Modal */}
+      <QuickApiKeyModal
+        isOpen={isApiKeyModalOpen}
+        onClose={() => setIsApiKeyModalOpen(false)}
+        onSuccess={fetchAiConfig}
       />
 
     </div>
