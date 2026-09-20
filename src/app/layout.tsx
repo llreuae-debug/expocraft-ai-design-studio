@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
@@ -18,9 +18,28 @@ const outfit = Outfit({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#020617",
+};
+
 export const metadata: Metadata = {
-  title: "ExpoCraft | AI Exhibition Stall Design & Estimation Platform",
-  description: "Production-ready platform connecting Brief → AI 3D Design → Technical Specification → BOQ → Market Estimate → Quotation PDF → Client Approval.",
+  title: "ExpoCraft AI — 3D Exhibition Stall Design & Estimation Platform",
+  description: "Production-ready AI exhibition stall design platform: Natural Language Brief → 4 3D Perspectives → 8K Presentation Renders → Commercial Proposals.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "ExpoCraft AI",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=192&auto=format&fit=crop&q=80",
+  },
 };
 
 export default function RootLayout({

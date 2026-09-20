@@ -1,0 +1,42 @@
+{
+  "name": "ExpoCraft AI — 3D Exhibition Stall Design & Estimation",
+  "short_name": "ExpoCraft",
+  "description": "AI-Powered 3D Exhibition Stall Design, 8K Presentation Renders & Client Proposal Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#020617",
+  "theme_color": "#06b6d4",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1511578314322-379afb476865?w=192&auto=format&fit=crop&q=80",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1511578314322-379afb476865?w=512&auto=format&fit=crop&q=80",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AI Design Studio",
+      "url": "/ai-designer",
+      "description": "Generate 8K 3D Stall Perspectives"
+    },
+    {
+      "name": "3D Space Studio",
+      "url": "/studio",
+      "description": "Inspect 3D Stall Orbit & Materials"
+    },
+    {
+      "name": "Quotations",
+      "url": "/quotations",
+      "description": "View & Export Client Proposals"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"]
+}
