@@ -21,6 +21,7 @@ import {
   Share2,
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { getRenderAssetForStyle } from "@/lib/renderAssets";
 
 interface MasterQuotationBuilderProps {
   project: Project;
@@ -228,13 +229,32 @@ export const MasterQuotationBuilder: React.FC<MasterQuotationBuilderProps> = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Front Elevation", img: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80" },
-              { label: "Corner 3/4 Aisle", img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80" },
-              { label: "VIP Hospitality", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&auto=format&fit=crop&q=80" },
-              { label: "Alternative Form", img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&auto=format&fit=crop&q=80" },
+              { 
+                label: "Front Elevation", 
+                img: project.perspectiveConcepts?.find(c => c.type === "FRONT")?.imageUrl || getRenderAssetForStyle(project.brief.designStyle, "hero") 
+              },
+              { 
+                label: "Corner 3/4 Aisle", 
+                img: project.perspectiveConcepts?.find(c => c.type === "CORNER")?.imageUrl || getRenderAssetForStyle(project.brief.designStyle, "corner") 
+              },
+              { 
+                label: "VIP Hospitality", 
+                img: project.perspectiveConcepts?.find(c => c.type === "INTERIOR")?.imageUrl || getRenderAssetForStyle(project.brief.designStyle, "interior") 
+              },
+              { 
+                label: "Alternative Form", 
+                img: project.perspectiveConcepts?.find(c => c.type === "ALTERNATIVE")?.imageUrl || getRenderAssetForStyle(project.brief.designStyle, "detail") 
+              },
             ].map((render, i) => (
               <div key={i} className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
-                <img src={render.img} alt={render.label} className="w-full h-24 object-cover" />
+                <img 
+                  src={render.img} 
+                  alt={render.label} 
+                  className="w-full h-24 object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = getRenderAssetForStyle(project.brief.designStyle, "hero");
+                  }} 
+                />
                 <div className="p-2 text-center text-[10px] font-semibold text-slate-300">{render.label}</div>
               </div>
             ))}

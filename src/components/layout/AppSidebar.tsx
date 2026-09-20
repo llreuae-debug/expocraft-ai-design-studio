@@ -34,19 +34,13 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard, clientVisible: true },
-  { name: "Projects", href: "/projects", icon: FolderKanban, clientVisible: true },
-  { name: "AI Designer", href: "/ai-designer", icon: Sparkles, badge: "AI Gen" },
-  { name: "3D Studio", href: "/studio", icon: Box, badge: "WebGL", clientVisible: true },
-  { name: "BOQ", href: "/boq", icon: Calculator },
-  { name: "Quotations", href: "/quotations", icon: FileSpreadsheet, clientVisible: true },
+  { name: "AI Design Studio", href: "/ai-designer", icon: Sparkles, badge: "8K AI", clientVisible: true },
+  { name: "3D Space Studio", href: "/studio", icon: Box, badge: "WebGL", clientVisible: true },
+  { name: "Projects & Gallery", href: "/projects", icon: FolderKanban, clientVisible: true },
+  { name: "Quotations & PDF", href: "/quotations", icon: FileSpreadsheet, clientVisible: true },
   { name: "Client Portal", href: "/client-portal", icon: ShieldCheck, clientVisible: true, badge: "Live" },
-  { name: "Clients", href: "/clients", icon: Users },
-  { name: "Market Rates", href: "/market-rates", icon: TrendingUp },
-  { name: "Materials", href: "/materials", icon: Boxes },
-  { name: "Labour Rates", href: "/labour-rates", icon: Hammer },
-  { name: "Asset Library", href: "/asset-library", icon: Layers },
-  { name: "Reports", href: "/reports", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Clients Directory", href: "/clients", icon: Users },
+  { name: "Settings & AI Key", href: "/settings", icon: Settings },
 ];
 
 export const AppSidebar: React.FC = () => {
@@ -136,11 +130,11 @@ export const AppSidebar: React.FC = () => {
       {/* Workflow Step Pipeline Guide */}
       <div className="p-3 mx-3 mb-3 rounded-2xl bg-slate-900/80 border border-slate-800/80 text-[11px] space-y-1.5">
         <div className="flex items-center justify-between text-slate-400 font-semibold text-[10px] uppercase">
-          <span>Connected Pipeline</span>
-          <span className="text-cyan-400 font-mono">7 Stages</span>
+          <span>AI 3D Workflow</span>
+          <span className="text-cyan-400 font-mono">5 Steps</span>
         </div>
         <p className="text-[10px] text-slate-400 leading-tight">
-          Brief → AI 3D → Specs → BOQ → Rates → Quote PDF → Client Signoff
+          AI Brief → 4 Concepts → Refine → 8K Render → Quote PDF
         </p>
       </div>
 

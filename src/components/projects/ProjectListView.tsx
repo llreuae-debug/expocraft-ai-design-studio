@@ -29,9 +29,8 @@ export const ProjectListView: React.FC = () => {
     { value: "ALL", label: "All Projects" },
     { value: "BRIEF_RECEIVED", label: "Brief Received" },
     { value: "AI_DESIGN_IN_PROGRESS", label: "AI 3D Generating" },
-    { value: "DESIGN_READY", label: "Design Ready" },
-    { value: "BOQ_ESTIMATING", label: "BOQ Estimating" },
-    { value: "QUOTATION_GENERATED", label: "Quote Generated" },
+    { value: "DESIGN_READY", label: "3D Design Ready" },
+    { value: "QUOTATION_GENERATED", label: "Quote Ready" },
     { value: "APPROVED", label: "Client Approved" },
   ];
 
@@ -42,13 +41,13 @@ export const ProjectListView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-white tracking-tight">Exhibition Projects</h1>
+            <h1 className="text-xl font-bold text-white tracking-tight">Exhibition Projects Gallery</h1>
             <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-mono font-semibold border border-cyan-500/30">
               {filteredProjects.length} Active
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Central source of truth connecting stall brief, 3D design concepts, BOQ calculations & commercial quotations.
+            Manage your exhibition stall projects, 3D concepts, 8K presentation renders, and commercial proposals.
           </p>
         </div>
 

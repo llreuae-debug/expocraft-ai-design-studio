@@ -172,7 +172,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect }) =
         </span>
 
         <span className="text-cyan-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-          <span>View Source</span>
+          <span>Open Studio & Renders</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </span>
       </div>
